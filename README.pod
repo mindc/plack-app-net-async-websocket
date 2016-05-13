@@ -84,7 +84,7 @@ are passed to L<Protocol::WebSocket::Frame>'s C<new> method.
 
 =item *
 
-L<Net::Async::WebSocket> - WebSocket server using C<IO::Async>
+L<Net::Async::WebSocket> - WebSocket server using L<IO::Async>
 
 =item *
 
