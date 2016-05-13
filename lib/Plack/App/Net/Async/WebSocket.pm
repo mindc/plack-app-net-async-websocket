@@ -5,34 +5,14 @@ use warnings;
 use parent qw( Plack::Component );
 
 use Protocol::WebSocket::Handshake::Server;
-use Net::Async::WebSocket::Protocol;
 use Carp;
-use Data::Dumper;
 
 our $VERSION = '0.01';
-
-
-sub Net::Async::HTTP::Server::Protocol::send_frame
-{
-	my ( $self, $frame ) = @_;
-	$self->write( Protocol::WebSocket::Frame->new( $frame )->to_bytes );
-}
-
-sub Net::Async::WebSocket::Protocol::send_broadcast
-{
-	my ( $self, $frame ) = @_;
-	foreach ( $self->loop->notifiers ) {
-		if ( exists($_->{'ws.path'}) && $_->{'ws.path'} eq $self->{'ws.path'} ) {
-			$_->send_frame( $frame );
-		}
-	}
-}
 
 sub new {
 	my ( $class, @params ) = @_;
 	my $self = $class->SUPER::new( @params );
 	croak "on_frame param is mandatory" if not defined $self->{on_frame};
-	croak "on_established param is mandatory" if not defined $self->{on_established};
 	return $self;
 }
 
@@ -41,7 +21,6 @@ sub call
 	my ( $self, $env ) = @_;
 
 	my $hs = Protocol::WebSocket::Handshake::Server->new_from_psgi( $env );
-	my $stream = $env->{'net.async.http.server.req'}->stream;
 
 	if ( !$hs->is_done ) {
 		$hs->parse('');
@@ -60,22 +39,32 @@ sub call
 					[ 101, [ Upgrade => 'WebSocket', Connection => 'Upgrade', 'Sec-WebSocket-Accept' => $h->header('Sec-WebSocket-Accept') ]]
 				);
 
-				my $fb = Protocol::WebSocket::Frame->new;
+				my $stream = $writer->[0]->stream;
+				
 				$stream->configure(
 					on_read => sub {
-						my ( undef, $buffref, $closed ) = @_;
-						$fb->append( $$buffref );
-						while( defined( my $frame = $fb->next ) ) {
-							$self->{on_frame}->( $stream, $frame );
+						my ( $ws, $buffref, $closed ) = @_;
+
+						my $framebuffer = $hs->build_frame;
+
+						$framebuffer->append( $$buffref );
+
+						while( defined( my $frame = $framebuffer->next ) ) {
+							$self->{on_frame}->( $ws, $frame );
 						}
 						return 0;
+					},
+					on_closed => sub {
+						$self->{on_closed}->( shift ) if exists $self->{on_closed};
 					}
 				);
-				
+
+				$self->{on_client}->( $stream ) if exists $self->{on_client};	
 			};
 		}
 	}
-}
 
 1;
+
+__END__
 
