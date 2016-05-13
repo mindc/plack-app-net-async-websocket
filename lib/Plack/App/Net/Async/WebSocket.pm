@@ -91,16 +91,16 @@ C<Plack::App::Net::Async::WebSocket> - serve WebSocket clients using C<IO::Async
  use Plack::App::Net::Async::WebSocket;
 
  my $app = Plack::App::Net::Async::WebSocket->new(
-	on_client => sub {
-		my ( $client ) = @_;
-		$client->sent_frame( 'Hello' );
+	on_handshake => sub {
+		my ( $websocket ) = @_;
+		$websocket->sent_frame( 'Hello' );
 	},
 	on_frame => sub {
-		my ( $client, $frame ) = @_;
-		$client->send_frame( $frame ); # echo
+		my ( $websocket, $frame ) = @_;
+		$websocket->send_frame( $frame ); # echo
 	},
 	on_closed => sub {
-		my ( $client ) = @_;
+		my ( $websocket ) = @_;
 	}
  );
 
