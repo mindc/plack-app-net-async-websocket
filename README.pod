@@ -6,6 +6,8 @@ C<Plack::App::Net::Async::WebSocket> - serve WebSocket clients using C<IO::Async
 
 =head1 SYNOPSIS
 
+ # app.psgi
+
  use Plack::App::Net::Async::WebSocket;
 
  my $app = Plack::App::Net::Async::WebSocket->new(
@@ -34,9 +36,9 @@ The following named parameters may be passed to C<new>:
 
 =over 8
 
-=item on_client => CODE
+=item on_handshake => CODE
 
-A callback that is invoke whenever a new connection has been handshaked.
+A CODE reference for when a new connection has been handshaked.
 This parameter is optional
 
 =item on_frame => CODE

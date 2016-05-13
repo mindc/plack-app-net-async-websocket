@@ -86,6 +86,8 @@ C<Plack::App::Net::Async::WebSocket> - serve WebSocket clients using C<IO::Async
 
 =head1 SYNOPSIS
 
+ # app.psgi
+
  use Plack::App::Net::Async::WebSocket;
 
  my $app = Plack::App::Net::Async::WebSocket->new(
