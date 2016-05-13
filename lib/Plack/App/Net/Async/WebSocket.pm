@@ -104,6 +104,22 @@ C<Plack::App::Net::Async::WebSocket> - serve WebSocket clients using C<IO::Async
 	}
  )->to_app;
 
+
+ # using Plack::Builder
+
+ use Plack::Builder;
+ use Plack::App::Net::Async::WebSocket;
+
+ builder {
+	mount '/websocket' => Plack::App::Net::Async::WebSocket->new(
+	       	on_frame => sub {
+                	my ( $websocket, $frame ) = @_;
+	                $websocket->send_frame( $frame ); # echo
+        	},
+ 	);
+ };
+ 
+
 =head1 DESCRIPTION
 
 This subclass of L<Plack::Component> accepts WebSocket connections. When a
