@@ -22,7 +22,7 @@ C<Plack::App::Net::Async::WebSocket> - serve WebSocket clients using C<IO::Async
 	on_closed => sub {
 		my ( $websocket ) = @_;
 	}
- );
+ )->to_app;
 
 =head1 DESCRIPTION
 
