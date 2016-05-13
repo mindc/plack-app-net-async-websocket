@@ -68,3 +68,86 @@ sub call
 
 __END__
 
+=encoding UTF-8
+
+=head1 NAME
+
+C<Plack::App::Net::Async::WebSocket> - serve WebSocket clients using C<IO::Async> over PSGI
+
+=head1 SYNOPSIS
+
+ use Plack::App::Net::Async::WebSocket;
+
+ my $app = Plack::App::Net::Async::WebSocket->new(
+	on_client => sub {
+		my ( $client ) = @_;
+		$client->sent_frame( 'Hello' );
+	},
+	on_frame => sub {
+		my ( $client, $frame ) = @_;
+		$client->send_frame( $frame ); # echo
+	},
+	on_closed => sub {
+		my ( $client ) = @_;
+	}
+ );
+
+=head1 DESCRIPTION
+
+This subclass of L<Plack::Component> accepts WebSocket connections. When a
+new connection arrives it will perform an initial handshake, and take control
+over existing connection.
+
+=head1 PARAMETERS
+
+The following named parameters may be passed to C<new>:
+
+=over 8
+
+=item on_client => CODE
+
+A callback that is onvoke whenever a new connection has been handshaked.
+This parameter is optional
+
+=item on_frame => CODE
+
+A CODE reference for when a frame is received
+
+=item on_close => CODE
+
+This parameter is optional
+
+=item on_error => CODE
+
+This parameter is optional
+
+=back
+
+=head1 METHODS
+
+=cut
+
+=head2 $client->send_frame( @args )
+
+Sends a frame to the peer containing the given string. The arguments 
+are passed to L<Protocol::WebSocket::Frame>'s C<new> method.
+
+=head1 SEE ALSO
+
+=over 8
+
+=item *
+
+L<Net::Async::WebSocket> - WebSocket server using C<IO::Async>
+
+=item *
+
+L<Plack::Handler::Net::Async::HTTP::Server> - HTTP handler for Plack using L<Net::Async::HTTP::Server>
+
+=back
+
+=head1 AUTHOR
+
+Paweł Feruś <null@mindc.net>
+
+=cut
