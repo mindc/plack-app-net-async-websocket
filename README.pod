@@ -25,7 +25,7 @@ C<Plack::App::Net::Async::WebSocket> - serve WebSocket clients using C<IO::Async
 =head1 DESCRIPTION
 
 This subclass of L<Plack::Component> accepts WebSocket connections. When a
-new connection arrives it will perform an initial handshake, and take control
+new connection arrives it will perform an initial handshake and take control
 over existing connection.
 
 =head1 PARAMETERS
@@ -36,7 +36,7 @@ The following named parameters may be passed to C<new>:
 
 =item on_client => CODE
 
-A callback that is onvoke whenever a new connection has been handshaked.
+A callback that is invoke whenever a new connection has been handshaked.
 This parameter is optional
 
 =item on_frame => CODE
